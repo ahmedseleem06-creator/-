@@ -13,7 +13,7 @@ class TitusApp extends StatelessWidget {
       title: 'تيتوس - Titus',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Cairo',
+        fontFamily: 'sans-serif',
         scaffoldBackgroundColor: const Color(0xFFFAF8F5),
         primaryColor: const Color(0xFFFFB800),
         colorScheme: ColorScheme.fromSeed(
@@ -63,10 +63,10 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   final List<Product> products = [
     Product(id: '1', title: 'بيتزا بيبروني', category: 'بيتزا', price: 65, icon: '🍕'),
     Product(id: '2', title: 'ساندوتش شاورما عربي', category: 'شاورما', price: 45, icon: '🌯'),
-    Product(id: '3', title: 'ماريا شاورما فراخ', category: 'شاورما', price: 50, icon: '🥙'),
-    Product(id: '4', title: 'فطيرة ميكس جبن', category: 'معجنات', price: 55, icon: '🥐'),
-    Product(id: '5', title: 'بيتزا تشيكن باربيكيو', category: 'بيتزا', price: 75, icon: '🍕'),
-    Product(id: '6', title: 'كومبو التوفير (2 بيتزا + لتر)', category: 'عروض', price: 120, icon: '🎁'),
+    Product(id: '3', title: 'ماريا شاورما دجاج', category: 'شاورما', price: 50, icon: '🥙'),
+    Product(id: '4', title: 'فطيرة ميكس أجبان', category: 'معجنات', price: 55, icon: '🥐'),
+    Product(id: '5', title: 'بيتزا سوبريم مشكل', category: 'بيتزا', price: 75, icon: '🍕'),
+    Product(id: '6', title: 'عرض التوفير (2 بيتزا + لتر)', category: 'عروض', price: 120, icon: '🎁'),
   ];
 
   void addToCart(Product p) {
@@ -76,7 +76,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('تمت إضافة ${p.title} إلى السلة'),
-        duration: const Duration(seconds: 1),
+        duration: const Duration(milliseconds: 900),
         backgroundColor: const Color(0xFF222222),
       ),
     );
@@ -103,10 +103,16 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                 color: const Color(0xFFFFB800),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text('تيتوس', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
+              child: const Text(
+                'تيتوس',
+                style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18),
+              ),
             ),
             const SizedBox(width: 8),
-            const Text('بيتزا ومعجنات وشاورما', style: TextStyle(color: Colors.grey, fontSize: 13)),
+            const Text(
+              'بيتزا ومعجنات وشاورما',
+              style: TextStyle(color: Colors.grey, fontSize: 12),
+            ),
           ],
         ),
         actions: [
@@ -139,7 +145,11 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                   ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
-                    BoxShadow(color: const Color(0xFFFFB800).withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))
+                    BoxShadow(
+                      color: const Color(0xFFFFB800).withOpacity(0.35),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    )
                   ],
                 ),
                 child: Row(
@@ -148,7 +158,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('عروض التوفير ⚡', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text('عرض التوفير الخاص ⚡', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                           SizedBox(height: 6),
                           Text('2 بيتزا سوبريم + لتر بيبسي بـ 120 ج.م فقط', style: TextStyle(fontSize: 13)),
                         ],
@@ -162,16 +172,16 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                       onPressed: () {
                         setState(() => selectedCategory = 'عروض');
                       },
-                      child: const Text('طلب العرض', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      child: const Text('اطلب الآن', style: TextStyle(color: Colors.white, fontSize: 12)),
                     )
                   ],
                 ),
               ),
             ),
 
-            // شريط الأقسام
+            // شريط تصنيفات المنيو
             SizedBox(
-              height: 45,
+              height: 42,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -181,7 +191,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                   final isSelected = cat == selectedCategory;
                   return Padding(
                     padding: const EdgeInsets.only(left: 8),
-                    child: FilterChip(
+                    child: ChoiceChip(
                       selected: isSelected,
                       label: Text(cat),
                       selectedColor: const Color(0xFFFFB800),
@@ -201,9 +211,9 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
 
-            // شبكة المنتجات (عمودين)
+            // شبكة كروت المنتجات
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: GridView.builder(
@@ -212,7 +222,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                 itemCount: filtered.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 0.8,
+                  childAspectRatio: 0.82,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),
@@ -220,7 +230,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                   final p = filtered[index];
                   return Card(
                     color: Colors.white,
-                    elevation: 1,
+                    elevation: 1.5,
+                    shadowColor: Colors.black12,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
@@ -228,15 +239,22 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            height: 70,
+                            height: 65,
                             alignment: Alignment.center,
-                            child: Text(p.icon, style: const TextStyle(fontSize: 48)),
+                            child: Text(p.icon, style: const TextStyle(fontSize: 46)),
                           ),
-                          Text(p.title, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                          Text(
+                            p.title,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('${p.price.toInt()} ج.م', style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFFE59800))),
+                              Text(
+                                '${p.price.toInt()} ج.م',
+                                style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFFE59800)),
+                              ),
                               InkWell(
                                 onTap: () => addToCart(p),
                                 child: Container(
@@ -257,7 +275,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 80),
+            const SizedBox(height: 90),
           ],
         ),
       ),
@@ -293,17 +311,24 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (ctx) {
         return Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom, left: 16, right: 16, top: 20),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+            left: 16,
+            right: 16,
+            top: 20,
+          ),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text('إتمام الطلب السريع ⚡', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 TextField(
                   controller: phoneController,
                   keyboardType: TextInputType.phone,
@@ -339,8 +364,10 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                   onPressed: () {
-                    if (phoneController.text.isEmpty) {
-                      ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('يرجى إدخال رقم الموبايل')));
+                    if (phoneController.text.trim().isEmpty) {
+                      ScaffoldMessenger.of(ctx).showSnackBar(
+                        const SnackBar(content: Text('يرجى كتابة رقم الموبايل لتأكيد الطلب')),
+                      );
                       return;
                     }
                     Navigator.pop(ctx);
@@ -348,8 +375,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                     showDialog(
                       context: context,
                       builder: (_) => AlertDialog(
-                        title: const Text('تم استلام الطلب! 🍕'),
-                        content: const Text('تم إرسال الأوردر للمطبخ مباشرة وبدء التجهيز.'),
+                        title: const Text('تم استلام طلبك! 🍕'),
+                        content: const Text('تم تحويل الأوردر إلى شاشة المطبخ وبدء التجهيز.'),
                         actions: [
                           TextButton(onPressed: () => Navigator.pop(context), child: const Text('حسناً'))
                         ],
@@ -358,7 +385,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                   },
                   child: const Text('تأكيد وإرسال للمطبخ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
               ],
             ),
           ),
