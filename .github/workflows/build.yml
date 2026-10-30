@@ -1,0 +1,46 @@
+name: Build Titus APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Ensure Android platform scaffolding exists
+        run: |
+          if [ ! -d "android" ]; then
+            flutter create . --platforms=android --org com.titus.app
+          fi
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK (Split per ABI)
+        run: flutter build apk --split-per-abi
+
+      - name: Upload APK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: titus-apk
+          path: build/app/outputs/flutter-apk/*.apk
+          retention-days: 7
