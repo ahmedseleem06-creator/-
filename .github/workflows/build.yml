@@ -7,12 +7,14 @@ on:
 
 jobs:
   build:
+    name: Build Flutter APK
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up Java Development Kit (JDK 17)
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -21,21 +23,39 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.x'
+          flutter-version: '3.24.x'
           channel: 'stable'
 
-      - name: Setup Android Scaffold
-        run: flutter create . --project-name titus_app --platforms=android --org com.titus.app
+      - name: Ensure Android platform scaffolding
+        run: |
+          if [ ! -d "android" ]; then
+            mkdir -p /tmp/titus_backup
+            cp -r lib assets pubspec.yaml /tmp/titus_backup/
+            flutter create . --project-name titus_app --platforms=android --org com.titus.app
+            rm -rf lib assets pubspec.yaml
+            cp -r /tmp/titus_backup/* .
+          fi
 
-      - name: Install dependencies
+      - name: Grant Internet Permission to Android
+        run: |
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+          if [ -f "$MANIFEST" ]; then
+            sed -i '/<manifest/a \    <uses-permission android:name="android.permission.INTERNET"\/>' "$MANIFEST"
+            sed -i '/<application/a \        android:usesCleartextTraffic="true"' "$MANIFEST"
+          fi
+
+      - name: Get Dependencies
         run: flutter pub get
 
-      - name: Build APK (Split per ABI)
-        run: flutter build apk --split-per-abi
+      # توليد أيقونة التطبيق لجميع أحجام الشاشات
+      - name: Generate App Launcher Icons
+        run: flutter pub run flutter_launcher_icons
 
-      - name: Upload APK Artifacts
+      - name: Build Universal Release APK
+        run: flutter build apk --release
+
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: titus-apk
-          path: build/app/outputs/flutter-apk/*.apk
-          retention-days: 7
+          name: Titus-App-Release
+          path: build/app/outputs/flutter-apk/app-release.apk
