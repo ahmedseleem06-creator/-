@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const TitusApp());
@@ -77,6 +78,22 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
+  final String whatsappNumber = "201064520957";
+
+  Future<void> _openWhatsApp({String message = "مرحباً مطعم تيتوس، أريد الاستفسار عن المنيو والطلبات"}) async {
+    final cleanPhone = whatsappNumber.replaceAll('+', '').replaceAll(' ', '');
+    final uri = Uri.parse("https://wa.me/$cleanPhone?text=${Uri.encodeComponent(message)}");
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تعذر فتح واتساب مباشرة، تأكد من تثبيت التطبيق.')),
+        );
+      }
+    }
+  }
+
   final List<CategoryItem> categories = [
     CategoryItem(id: 'all', name: 'الكل', icon: '🍽️'),
     CategoryItem(id: 'pizza', name: 'بيتزا', icon: '🍕'),
@@ -92,7 +109,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
       category: 'pizza',
       price: 95,
       rating: '4.9',
-      image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=400&q=80',
+      image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=600&q=80',
       badge: 'الأكثر مبيعاً',
     ),
     Product(
@@ -101,7 +118,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
       category: 'shawarma',
       price: 65,
       rating: '4.8',
-      image: 'https://images.unsplash.com/photo-1561651823-34feb02250e4?auto=format&fit=crop&w=400&q=80',
+      image: 'https://images.unsplash.com/photo-1561651823-34feb02250e4?auto=format&fit=crop&w=600&q=80',
       badge: 'خلطة تيتوس',
     ),
     Product(
@@ -110,7 +127,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
       category: 'pizza',
       price: 110,
       rating: '4.9',
-      image: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=400&q=80',
+      image: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?auto=format&fit=crop&w=600&q=80',
     ),
     Product(
       id: 'p4',
@@ -118,7 +135,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
       category: 'pastry',
       price: 55,
       rating: '4.7',
-      image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80',
+      image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80',
       badge: 'طازة من الفرن',
     ),
     Product(
@@ -127,7 +144,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
       category: 'shawarma',
       price: 75,
       rating: '4.9',
-      image: 'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=400&q=80',
+      image: 'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=600&q=80',
     ),
     Product(
       id: 'p6',
@@ -135,7 +152,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
       category: 'pastry',
       price: 45,
       rating: '4.6',
-      image: 'https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=400&q=80',
+      image: 'https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=600&q=80',
     ),
     Product(
       id: 'p7',
@@ -143,8 +160,17 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
       category: 'offers',
       price: 185,
       rating: '5.0',
-      image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80',
+      image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80',
       badge: 'توفير 25%',
+    ),
+    Product(
+      id: 'p8',
+      title: 'بيتزا باربيكيو تشيكن',
+      category: 'pizza',
+      price: 105,
+      rating: '4.8',
+      image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80',
+      badge: 'جديد',
     ),
   ];
 
@@ -211,6 +237,21 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFFAF8F5),
+      // Floating WhatsApp Button
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: _totalItemsCount > 0 ? 70 : 10),
+        child: FloatingActionButton.extended(
+          heroTag: 'whatsapp_btn',
+          onPressed: () => _openWhatsApp(),
+          backgroundColor: const Color(0xFF25D366),
+          elevation: 5,
+          icon: const Icon(Icons.chat, color: Colors.white, size: 24),
+          label: const Text(
+            'واتساب المطعم',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13),
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Stack(
           children: [
@@ -696,7 +737,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
                         ),
                       ),
 
-                const SliverToBoxAdapter(child: SizedBox(height: 120)),
+                const SliverToBoxAdapter(child: SizedBox(height: 140)),
               ],
             ),
 
@@ -778,7 +819,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
         ),
       ),
 
-      // 7. Bottom Navigation Bar (Matches HTML tabs)
+      // 7. Bottom Navigation Bar
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -798,7 +839,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
             } else if (index == 2) {
               _openCartBottomSheet(context);
             } else if (index == 3) {
-              _openCheckoutModal(context);
+              _openWhatsApp(message: "مرحباً، أود التواصل مع خدمة عملاء مطعم تيتوس");
             }
           },
           type: BottomNavigationBarType.fixed,
@@ -820,14 +861,14 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
               ),
               label: 'السلة',
             ),
-            const BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'حسابي'),
+            const BottomNavigationBarItem(icon: Icon(Icons.support_agent_rounded), label: 'تواصل معنا'),
           ],
         ),
       ),
     );
   }
 
-  // 8. Cart Bottom Sheet Modal (Image, Quantities, Delivery Fee 15 EGP, Grand Total)
+  // 8. Cart Bottom Sheet Modal
   void _openCartBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -1043,7 +1084,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
     );
   }
 
-  // 9. Quick OTP / Checkout Modal
+  // 9. Quick Checkout Modal
   void _openCheckoutModal(BuildContext context) {
     final phoneController = TextEditingController();
     final nameController = TextEditingController();
@@ -1223,12 +1264,21 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
 
                               final phone = phoneController.text.trim();
                               final name = nameController.text.trim().isEmpty ? 'عميلنا العزيز' : nameController.text.trim();
+                              final address = addressController.text.trim();
                               final orderId = '#TIT-${Random().nextInt(9000) + 1000}';
+
+                              // إنشاء ملخص الطلب لإرساله لواتساب اختارياً
+                              String orderSummary = "طلب جديد من تطبيق تيتوس ($orderId):\n"
+                                  "العميل: $name\n"
+                                  "الهاتف: $phone\n"
+                                  "العنوان: $address\n"
+                                  "طريقة الدفع: ${paymentMethod == 'cash' ? 'كاش' : 'فودافون كاش'}\n"
+                                  "الإجمالي: ${totalToPay.toInt()} ج.م";
 
                               Navigator.pop(ctx);
                               setState(() => cart.clear());
 
-                              _showSuccessOrderDialog(context, name, phone, orderId);
+                              _showSuccessOrderDialog(context, name, phone, orderId, orderSummary);
                             },
                             child: const Text('إرسال الطلب للمطبخ 👨‍🍳', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
                           ),
@@ -1246,7 +1296,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
   }
 
   // 10. Success Order Dialog
-  void _showSuccessOrderDialog(BuildContext context, String name, String phone, String orderId) {
+  void _showSuccessOrderDialog(BuildContext context, String name, String phone, String orderId, String orderSummary) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -1274,7 +1324,7 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
             const Text('طلبك وصل شيف تيتوس!', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18), textAlign: TextAlign.center),
             const SizedBox(height: 6),
             Text(
-              'أهلاً بك يا $name! تم توجيه طلبك فوراً لمطبخ تيتوس وسيصلك اتصال لتأكيد العنوان على الرقم $phone.',
+              'أهلاً بك يا $name! تم استلام طلبك وبدء التجهيز، وسيصلك اتصال لتأكيد العنوان على الرقم $phone.',
               style: const TextStyle(fontSize: 12, color: Color(0xFF7E7A75)),
               textAlign: TextAlign.center,
             ),
@@ -1304,6 +1354,21 @@ class _MainRestaurantScreenState extends State<MainRestaurantScreen> {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 12),
+            // WhatsApp Order Confirmation Button
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF25D366),
+                foregroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(40),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              icon: const Icon(Icons.chat, size: 18),
+              label: const Text('إرسال تفاصيل الطلب عبر واتساب', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+              onPressed: () {
+                _openWhatsApp(message: orderSummary);
+              },
             ),
           ],
         ),
