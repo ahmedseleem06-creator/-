@@ -30,10 +30,13 @@ jobs:
         run: |
           if [ ! -d "android" ]; then
             mkdir -p /tmp/titus_backup
-            cp -r lib assets pubspec.yaml /tmp/titus_backup/
+            cp -r lib pubspec.yaml /tmp/titus_backup/
+            if [ -d "assets" ]; then cp -r assets /tmp/titus_backup/; fi
             flutter create . --project-name titus_app --platforms=android --org com.titus.app
-            rm -rf lib assets pubspec.yaml
-            cp -r /tmp/titus_backup/* .
+            rm -rf lib pubspec.yaml
+            cp -r /tmp/titus_backup/lib .
+            cp /tmp/titus_backup/pubspec.yaml .
+            if [ -d "/tmp/titus_backup/assets" ]; then cp -r /tmp/titus_backup/assets .; fi
           fi
 
       - name: Grant Internet Permission to Android
@@ -47,9 +50,11 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
-      # توليد أيقونة التطبيق لجميع أحجام الشاشات
       - name: Generate App Launcher Icons
-        run: flutter pub run flutter_launcher_icons
+        run: |
+          if [ -f "assets/icon.png" ]; then
+            flutter pub run flutter_launcher_icons
+          fi
 
       - name: Build Universal Release APK
         run: flutter build apk --release
